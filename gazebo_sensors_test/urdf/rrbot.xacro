@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<robot name="rrbot"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- マテリアルの定義 -->
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="green">
+    <color rgba="0 0.8 0 1"/>
+  </material>
+
+  <!-- 固定ベース -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.0016" ixy="0" ixz="0" iyy="0.0016" iyz="0" izz="0.0016"/>
+    </inertial>
+  </link>
+
+  <!-- リンク1 -->
+  <link name="link1">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.021" ixy="0" ixz="0" iyy="0.021" iyz="0" izz="0.0016"/>
+    </inertial>
+  </link>
+
+  <!-- リンク2 -->
+  <link name="link2">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <material name="green"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.021" ixy="0" ixz="0" iyy="0.021" iyz="0" izz="0.0016"/>
+    </inertial>
+  </link>
+
+  <!-- ジョイント1 -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0.0 0 0.05" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="100" velocity="100"/>
+  </joint>
+
+  <!-- ジョイント2 -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0.1 0 0.5" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="100" velocity="100"/>
+  </joint>
+
+  <!-- Gazebo用の設定 -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Black</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+
+  <gazebo reference="link1">
+    <material>Gazebo/Blue</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <damping>0.1</damping>
+  </gazebo>
+
+  <gazebo reference="link2">
+    <material>Gazebo/Green</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <damping>0.1</damping>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="ignition-gazebo-forcetorque-system" name="ignition::gazebo::systems::ForceTorque"></plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="ignition-gazebo-contact-system" name="ignition::gazebo::systems::Contact">
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="joint1">
+    <sensor name="joint1_ft_sensor" type="force_torque">
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="joint2">
+    <sensor name="joint2_ft_sensor" type="force_torque">
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="link1">
+    <sensor name="link1_contact" type="contact">
+      <always_on>1</always_on>
+      <contact>
+        <collision>link1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="link2">
+    <sensor name="link2_contact" type="contact">
+      <always_on>1</always_on>
+      <contact>
+        <collision>link2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+</robot>
